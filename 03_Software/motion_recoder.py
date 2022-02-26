@@ -1,6 +1,10 @@
 #!/usr/bin/env python
+import imp
 import cv2
 import numpy as np
+import sys
+from time import sleep
+import requests
 
 
 # A simple Motion Detection algorithm.
@@ -53,6 +57,11 @@ class MotionDetection:
 
 def process():
     # print "Initializing camera..."
+
+    #kicking the esp cam to actualy stream sth
+    req = requests.get("http://192.168.178.150", timeout=10)
+
+    #getting the stream
     cap = cv2.VideoCapture("http://192.168.178.150:81/stream")
 
     
@@ -63,6 +72,13 @@ def process():
 
     while True:
         ret, frame = cap.read()
+
+        if frame is None:
+            print("no image captured retrying")
+            raise Exception("no image")
+            sleep(3)
+            continue
+
         cv2.imshow('frame',frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -79,4 +95,14 @@ def process():
 
 
 if __name__ == "__main__":
-    process()
+    print("main")
+    while True:
+        try:
+            print("try")
+            process()
+
+        except KeyboardInterrupt:
+            sys.exit()
+        
+        except Exception as e:
+            print(e)
