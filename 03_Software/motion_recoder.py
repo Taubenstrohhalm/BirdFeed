@@ -5,6 +5,9 @@ import numpy as np
 import sys
 from time import sleep
 import requests
+from datetime import datetime
+
+img_file_path = "/home/pi/birds/"
 
 
 # A simple Motion Detection algorithm.
@@ -17,7 +20,7 @@ class MotionDetection:
 
         # Configurations
         # Change these to adjust sensitive of motion
-        self._MOTION_LEVEL = 2000000
+        self._MOTION_LEVEL = 10000000
         self._THRESHOLD = 35
 
     def _updateImage(self, image):
@@ -79,7 +82,7 @@ def process():
             sleep(3)
             continue
 
-        cv2.imshow('frame',frame)
+        # cv2.imshow('frame',frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         
@@ -87,8 +90,9 @@ def process():
 
         if detection.detectMotion(frame):
             print("motion")
-            name = f"{count}.jpg"
-            ret = cv2.imwrite(name, frame) 
+            file = f'{img_file_path}{datetime.now():%Y-%m-%d-%H-%M-%S}.jpg'
+
+            ret = cv2.imwrite(file, frame) 
             print(ret)
     cap.release()
     cv2.destroyAllWindows()
